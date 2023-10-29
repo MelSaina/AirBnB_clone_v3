@@ -33,7 +33,8 @@ def del_city(city_id):
             abort(404)
         city.delete()
         storage.save()
-return make_response(jsonify({}), 200)
+
+        return make_response(jsonify({}), 200)
 
 @app_views.route('/states/<state_id>/cities', methods=['POST'],
                  strict_slashes=False)
@@ -57,11 +58,12 @@ def post_city(state_id):
 @app_views.route('/cities/<city_id>', methods=['PUT'],
                  strict_slashes=False)
 def put_city(city_id):
-    """ Updates a City object """
+    """ 
+    Updates a City object 
+    """
     city = storage.get("City", city_id)
     if not city:
         abort(404)
-
     body_request = request.get_json()
     if not body_request:
         abort(400, "Not a JSON")
