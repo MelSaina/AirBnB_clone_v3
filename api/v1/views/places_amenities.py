@@ -1,21 +1,23 @@
 #!/usr/bin/python3
-"""Create a view for the link for Place & Amenity"""
-
-from flask import jsonify, request, abort, make_response
-from api.v1.views import app_views
-from models import storage
+"""View for the link btn Place objs anf Amenity objs"""
 from models.place import Place
 from models.amenity import Amenity
+from models import storage
 from os import environ
+from flask import abort, jsonify, make_response, request
+from api.v1.views import app_views
 
 
 @app_views.route('places/<place_id>/amenities', methods=['GET'],
                  strict_slashes=False)
 def get_place_amenities(place_id):
-    """Retrieves the list of all Amenity objects of a place"""
-    place = storage.get("Place", place_id)
+    """Retrieves the list of all amenities of a place
+    """
+    place = storage.get(Place, place_id)
+
     if not place:
         abort(404)
+
     if environ.get('HBNB_TYPE_STORAGE') == "db":
         amenities = [amenity.to_dict() for amenity in place.amenities]
     else:
@@ -28,15 +30,20 @@ def get_place_amenities(place_id):
 @app_views.route('/places/<place_id>/amenities/<amenity_id>',
                  methods=['DELETE'], strict_slashes=False)
 def delete_place_amenity(place_id, amenity_id):
-    """Deletes an Amenity object from a place"""
-    place = storage.get('Place', place_id)
+    """
+    Deletes a Amentiy object of a place
+    """
+    place = storage.get(Place, place_id)
+
     if not place:
         abort(404)
-    amenity = storage.get('Amenity', amenity_id)
+
+    amenity = storage.get(Amenity, amenity_id)
+
     if not amenity:
         abort(404)
 
-    if environ.get('HBNB_TYPE_STORAGE') == "db":
+    if environ.get('HBNB_TYPE_STORAGE') == 'db':
         if amenity not in place.amenities:
             abort(404)
         place.amenities.remove(amenity)
@@ -51,12 +58,15 @@ def delete_place_amenity(place_id, amenity_id):
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['POST'],
                  strict_slashes=False)
-def link_place_amenity(place_id, amenity_id):
+def post_place_amenity(place_id, amenity_id):
     """Links an amenity object to a place"""
-    place = storage.get('Place', place_id)
+    place = storage.get(Place, place_id)
+
     if not place:
         abort(404)
-    amenity = storage.get('Amenity', amenity_id)
+
+    amenity = storage.get(Amenity, amenity_id)
+
     if not amenity:
         abort(404)
 
