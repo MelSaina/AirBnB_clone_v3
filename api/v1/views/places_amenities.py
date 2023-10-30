@@ -1,27 +1,21 @@
 #!/usr/bin/python3
-""" objects that handle all default RestFul API actions for Place - Amenity """
+"""Create a view for the link for Place & Amenity"""
+
+from flask import jsonify, request, abort, make_response
+from api.v1.views import app_views
+from models import storage
 from models.place import Place
 from models.amenity import Amenity
-from models import storage
 from os import environ
-from flask import abort, jsonify, make_response, request
-from flasgger.utils import swag_from
-from api.v1.views import app_views
 
 
 @app_views.route('places/<place_id>/amenities', methods=['GET'],
                  strict_slashes=False)
-@swag_from('documentation/place_amenity/get_places_amenities.yml',
-           methods=['GET'])
 def get_place_amenities(place_id):
-    """
-    Retrieves the list of all Amenity objects of a Place
-    """
-    place = storage.get(Place, place_id)
-
+    """Retrieves the list of all Amenity objects of a place"""
+    place = storage.get("Place", place_id)
     if not place:
         abort(404)
-
     if environ.get('HBNB_TYPE_STORAGE') == "db":
         amenities = [amenity.to_dict() for amenity in place.amenities]
     else:
@@ -33,19 +27,12 @@ def get_place_amenities(place_id):
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>',
                  methods=['DELETE'], strict_slashes=False)
-@swag_from('documentation/place_amenity/delete_place_amenities.yml',
-           methods=['DELETE'])
 def delete_place_amenity(place_id, amenity_id):
-    """
-    Deletes a Amenity object of a Place
-    """
-    place = storage.get(Place, place_id)
-
+    """Deletes an Amenity object from a place"""
+    place = storage.get('Place', place_id)
     if not place:
         abort(404)
-
-    amenity = storage.get(Amenity, amenity_id)
-
+    amenity = storage.get('Amenity', amenity_id)
     if not amenity:
         abort(404)
 
@@ -64,19 +51,12 @@ def delete_place_amenity(place_id, amenity_id):
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['POST'],
                  strict_slashes=False)
-@swag_from('documentation/place_amenity/post_place_amenities.yml',
-           methods=['POST'])
-def post_place_amenity(place_id, amenity_id):
-    """
-    Link a Amenity object to a Place
-    """
-    place = storage.get(Place, place_id)
-
+def link_place_amenity(place_id, amenity_id):
+    """Links an amenity object to a place"""
+    place = storage.get('Place', place_id)
     if not place:
         abort(404)
-
-    amenity = storage.get(Amenity, amenity_id)
-
+    amenity = storage.get('Amenity', amenity_id)
     if not amenity:
         abort(404)
 
